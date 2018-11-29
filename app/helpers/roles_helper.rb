@@ -26,7 +26,6 @@ module RolesHelper
     field_set_tag(title, class: 'person-fields', style: element_visible(visible)) { yield }
   end
 
-
   def format_role_created_at(role)
     f(role.created_at.to_date)
   end
@@ -56,10 +55,20 @@ module RolesHelper
     options
   end
 
-  def roles_type_select_options(group)
+  def roles_type_select_options(group, role)
     options = { include_blank: true }
-    options[:selected] = '@group.default_role' if group.default_role
-    options
+    selected = existing_role(role) || default_role(group)
+    options.merge(selected: selected)
+  end
+
+  private
+
+  def default_role(group)
+    group.default_role ? group.default_role.sti_name : nil
+  end
+
+  def existing_role(role)
+    role ? role.type : nil
   end
 
 end

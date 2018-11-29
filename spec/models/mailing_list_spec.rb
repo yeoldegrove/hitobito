@@ -86,6 +86,23 @@ describe MailingList do
       list.mail_name = 'foo'
       expect(list).to have(1).error_on(:mail_name)
     end
+
+    it 'succeed with additional_sender' do
+      list.additional_sender = ''
+      expect(list).to be_valid
+    end
+    it 'succeed with additional_sender' do
+      list.additional_sender = 'abc@de.ft; *@df.dfd.ee,test@test.test'
+      expect(list).to be_valid
+    end
+    it 'succeed with additional_sender' do
+      list.additional_sender = 'abc*dv@test.ch'
+      expect(list).to have(1).error_on(:additional_sender)
+    end
+    it 'succeed with additional_sender' do
+      list.additional_sender = 'abc@de.ft;as*d@df.dfd.ee,test@test.test'
+      expect(list).to have(1).error_on(:additional_sender)
+    end
   end
 
   describe '#subscribed?' do
@@ -473,6 +490,19 @@ describe MailingList do
         expect(list.subscribed?(pg2)).to be_falsey
         expect(list.subscribed?(pe1)).to be_falsey
       end
+    end
+  end
+
+  context 'mailchimp' do
+    let(:leaders) { mailing_lists(:leaders) }
+
+    it 'does not enqueue destroy job if list is not connected' do
+      expect { list.destroy }.not_to change { Delayed::Job.count }
+    end
+
+    it 'does enqueue destroy job if list is connected' do
+      list.update!(mailchimp_api_key: 1, mailchimp_list_id: 1)
+      expect { list.destroy }.to change { Delayed::Job.count }.by(1)
     end
   end
 

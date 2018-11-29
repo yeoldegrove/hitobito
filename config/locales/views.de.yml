@@ -20,6 +20,7 @@ de:
     confirm_delete: Wollen Sie diesen Eintrag wirklich löschen?
     do_not_fill: Bitte dieses Feld nicht ausfüllen
     chosen_no_results: Keine Einträge gefunden mit
+    selected: Ausgewählt
 
     gender:
       male: männlich
@@ -40,6 +41,7 @@ de:
     button:
       save: Speichern
       cancel: Abbrechen
+      close: Schliessen
       search: Suchen
       back: Zurück
       refresh: Aktualisieren
@@ -363,6 +365,17 @@ de:
         next: Weiter
         enter_email: Bitte gib deine E-Mailadresse ein, damit du dich für den Anlass anmelden kannst.
 
+    participation_lists:
+      create:
+        success:
+          one: "Eine Person wurde erfolgreich zum %{event_type} '%{event}' hinzugefügt"
+          other: "%{count} Personen wurden erfolgreich zum %{event_type} '%{event}' hinzugefügt"
+      new:
+        title: Personen einem %{event_label} zuweisen
+        event_search: Anlass Suchen...
+        submit: Hinzufügen
+
+
   events:
     application_fields:
       caption_signature: Teilnehmer/-innen müssen die Anmeldung unterschreiben
@@ -559,6 +572,7 @@ de:
     subgroups: 'Untergruppen'
     tabs:
       deleted: 'Gelöscht'
+    export_enqueued: 'Export wird im Hintergrund gestartet und nach Fertigstellung heruntergeladen.'
 
   group/person_add_requests:
     deactivated: Manuelle Freigabe deaktiviert
@@ -603,8 +617,8 @@ de:
     add: Externe Rechnung erstellen
     add_payments: Zahlungen erfassen
     issued: Rechnung gestellt
-    sent: Rechnung versendet
-    reminder_sent: Mahnung versendet, fällig am %{date} (%{title})
+    sent: Rechnung per Mail versendet
+    reminder_sent: Mahnung gestellt, fällig am %{date} (%{title})
     payed: bezahlt
     destroy:
       flash:
@@ -617,6 +631,7 @@ de:
       invoice_date: Rechnungsdatum
       due_at: Fällig bis
       creator: Rechnungssteller
+      vat_number: MwSt. Nummer
 
   invoice_configs:
     form_tabs:
@@ -626,11 +641,13 @@ de:
         success: Rechnungseinstellungen wurden erfolgreich aktualisiert
     general_fields:
       payment_slip: 'Einzahlungsschein'
-      payment_information_help: 'Wird in jeder Rechnung aufgeführt, kann pro Rechnung angepasst werden.'
+      payment_information_help: 'Wird in jeder Rechnung aufgeführt, kann pro Rechnung angepasst werden'
       address_help: 'Erscheint auf dem Brief als Absenderadresse'
+      email_help: 'Wird als E-Mail Absender anstelle des aktuellen Benutzers verwendet'
       payee_help: 'Erscheint auf dem Einzahlungsschein'
       beneficiary_help: 'Erscheint auf dem Einzahlungsschein'
       account_number_example: 'Beispiel: 01-162-5'
+      participant_number_internal_example: 'Beispiel: 999999'
       iban_example: 'Beispiel: CH93 0076 2011 6238 5295 7'
     reminder_fields:
       third_level: 'Für alle weiteren Mahnungen, wird die dritte Mahnstufe wiederholt.'
@@ -705,7 +722,8 @@ de:
         one: Es wurde eine ungültige Zahlung erkannt.
         other: Es wurden %{count} ungültige Zahlungen erkannt.
     show:
-      payments_with_invoice: Zuordenbare Zahlungen vom %{from} bis %{to}.
+      payments_with_invoice: Zuordenbare Zahlungen
+      payments_with_invoice_and_dates: Zuordenbare Zahlungen vom %{from} bis %{to}
       payments_without_invoice: Nicht Zuordenbar
       amount_open: Offen
       create:
@@ -753,6 +771,11 @@ de:
       wait_for_downloads: 'Die Downloads werden vorbereitet, bitte warten.'
       cancel_downloads: 'Downloads abbrechen'
 
+    synchronization:
+      wait_for_synchronization: 'Ihre Daten werden aktuell an MailChimp gesendet. Dies kann einen Moment dauern. Danach wird die ausgewählte Liste mit den Kontakten aus hitobito aktualisiert sein.'
+      synchronization_failed: 'Beim Senden der Daten an MailChimp ist ein Fehler aufgetreten (%{error}).'
+      cancel_synchronization: 'Export abbrechen'
+
   mailing_lists:
     global:
       link:
@@ -766,6 +789,7 @@ de:
       caption_anyone_may_post: 'Beliebige Absender/-innen dürfen auf die Mailingliste schreiben'
       caption_delivery_report: 'E-Mail mit Bestätigung an Absender schicken'
       help_preferred_labels: 'E-Mails werden falls vorhanden, nur an E-Mailadressen mit dieser Bezeichnung verschickt. Dabei werden auch E-Mail Adressen verwendet, die nicht als Versand-Adresse markiert sind.'
+      help_mailchimp_sync: 'Abonnenten können an die MailChimp-Liste exportiert werden, dies geschieht jedoch nicht automatisch. Diese Aktion überschreibt die MailChimp-Liste und bestehende Kontakte werden gelöscht.'
 
   mailing_list_decorator:
     may_subscribe: 'Abonnenten dürfen sich selbst an/abmelden'
@@ -781,6 +805,7 @@ de:
     unsubscribe: 'Abmelden'
 
   navigation:
+    menu: 'Menü'
     groups: 'Gruppen'
     events: 'Anlässe'
     courses: 'Kurse'
@@ -1044,6 +1069,12 @@ de:
     export_enqueued: 'Export wird im Hintergrund gestartet und nach Fertigstellung heruntergeladen.'
     export_email_needed: 'Für den Export wird eine Email Adresse benötigt.'
 
+    multiselect_actions:
+      remove_role: Rollen entfernen
+      move_role: Rollen verschieben
+      add_role: Rolle hinzufügen
+      add_participation: Zu Veranstaltung hinzufügen
+
   participations:
     destroy:
       flash:
@@ -1067,6 +1098,11 @@ de:
         active: war die Rolle aktiv.
         created: wurde die Rolle erstellt.
         deleted: wurde die Rolle gelöscht.
+
+    attributes:
+      title: Felder
+      match: enthält
+      equal: ist genau
 
     new:
       title: Personen filtern
@@ -1135,6 +1171,54 @@ de:
         Die Rolle %{role} in der Gruppe %{group} kann nur öffentliche Daten
         (Gruppen, Anlässe und Abos; keine anderen Personen) sehen.
       only_visible_from_above: Diese Rolle ist nur von Personen in dieser Ebene sichtbar, nicht von Personen aus darüber liegenden Ebenen.
+
+  role_lists:
+    available:
+      no_entries: Keine für Sie löschbare Rollen vorhanden
+    access_denied: Zugriff auf %{person} verweigert
+    destroy:
+      success:
+        zero: Es wurde keine Rolle entfernt
+        one: Eine Rolle wurde entfernt
+        other: '%{count} Rollen wurden entfernt'
+    create:
+      success:
+        zero: Es wurde keine Rolle erstellt
+        one: Eine Rolle wurde erstellt
+        other: '%{count} Rollen wurden erstellt'
+      failure: Bitte geben Sie eine valide Rolle an
+    update: 
+      success:
+        zero: Es wurde keine Rolle verschoben
+        one: Eine Rolle wurde verschoben
+        other: '%{count} Rollen wurden verschoben'
+      failure: Bitte geben Sie eine valide Rolle an
+    move:
+      title: Wohin sollen die Personen verschoben werden?
+      submit: Weiter
+    movable:
+      title: Welche Rollen sollen gelöscht werden?
+      submit: Rollen verschieben
+    deletable:
+      title: Welche Rollen sollen gelöscht werden?
+      submit: Entfernen
+    new:
+      title: Wo sollen die neuen Rollen erstellt werden?
+      submit:
+        one: Eine Rolle erstellen
+        other: '%{count} Rollen erstellen'
+
+  service_tokens:
+    global:
+      link:
+        add: API-Key hinzufügen
+    list:
+      ability:
+        read: Lesen
+        people_below: Personen von Untergruppen
+        people: Personen dieser Gruppe
+        events: Events dieser Gruppe
+        groups: Gruppen dieser Gruppe
 
   subscriber:
     group:
@@ -1206,9 +1290,9 @@ de:
     impersonate: "Account wurde von %{user} übernommen."
     impersonation_done: "Account wird nicht mehr von %{user} verwendet."
 
-    append_to_household: "%{user} wurde zum Haushalt (%{object_changes}) hinzugefügt."
+    append_to_household: "%{item} wurde zum Haushalt (%{object_changes}) hinzugefügt."
     household_updated: "Haushalt (%{object_changes}) wurde aktualisiert."
-    remove_from_household: "%{user} wurde vom Haushalt (%{object_changes}) entfernt."
+    remove_from_household: "%{item} wurde vom Haushalt (%{object_changes}) entfernt."
 
   views:
     pagination:

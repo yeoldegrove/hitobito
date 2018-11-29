@@ -72,9 +72,9 @@ class StandardFormBuilder < ActionView::Helpers::FormBuilder
     html_options[:class] ||= 'span2'
     text_field(attr, html_options)
   end
-  alias_method :integer_field, :number_field
-  alias_method :float_field,   :number_field
-  alias_method :decimal_field, :number_field
+  alias integer_field number_field
+  alias float_field number_field
+  alias decimal_field number_field
 
   # Render a standard string field with column contraints.
   def string_field(attr, html_options = {})
@@ -264,11 +264,6 @@ class StandardFormBuilder < ActionView::Helpers::FormBuilder
     template.render('shared/error_messages', errors: @object.errors, object: @object)
   end
 
-  # Renders a marker if the given attr has to be present.
-  def required_mark(attr)
-    required?(attr) ? REQUIRED_MARK : ''
-  end
-
   # Render a label for the given attribute with the passed field html section.
   # The following parameters may be specified:
   #   labeled(:attr) { #content }
@@ -284,8 +279,9 @@ class StandardFormBuilder < ActionView::Helpers::FormBuilder
     end
     caption_or_content ||= captionize(attr, klass)
     add_css_class(html_options, 'controls')
+    css_classes = { 'control-group' => true, error: errors_on?(attr), required: required?(attr) }
 
-    content_tag(:div, class: "control-group#{' error' if errors_on?(attr)}") do
+    content_tag(:div, class: css_classes.select { |_css, show| show }.keys.join(' ')) do
       label(attr, caption_or_content, class: 'control-label') +
       content_tag(:div, content, html_options)
     end
@@ -333,8 +329,8 @@ class StandardFormBuilder < ActionView::Helpers::FormBuilder
   end
 
   # Overriden to fullfill contract with method_missing 'labeled_' methods.
-  def respond_to?(name)
-    labeled_field_method?(name).present? || super(name)
+  def respond_to?(name, include_all = false)
+    labeled_field_method?(name).present? || super(name, include_all)
   end
 
   # Generates a help inline for fields
@@ -355,9 +351,7 @@ class StandardFormBuilder < ActionView::Helpers::FormBuilder
     unless list
       assoc = association(@object, attr)
       list = @template.send(:instance_variable_get, :"@#{assoc.name.to_s.pluralize}")
-      unless list
-        list = assoc.klass.where(assoc.options[:conditions]).order(assoc.options[:order])
-      end
+      list ||= assoc.klass.where(assoc.options[:conditions]).order(assoc.options[:order])
     end
     list
   end
@@ -393,10 +387,8 @@ class StandardFormBuilder < ActionView::Helpers::FormBuilder
 
   def errors_on?(attr)
     attr_plain, attr_id = assoc_and_id_attr(attr)
-    # rubocop:disable DeprecatedHashMethods
-    @object.errors.has_key?(attr_plain.to_sym) ||
-    @object.errors.has_key?(attr_id.to_sym)
-    # rubocop:enable DeprecatedHashMethods
+    @object.errors.key?(attr_plain.to_sym) ||
+    @object.errors.key?(attr_id.to_sym)
   end
 
   # Returns true if the given attribute must be present.
@@ -437,7 +429,7 @@ class StandardFormBuilder < ActionView::Helpers::FormBuilder
     labeled_args = [args.first]
     labeled_args << label if label.present?
 
-    text = send(field_method, *(args << options)) + required_mark(args.first)
+    text = send(field_method, *(args << options))
     text = with_addon(addon, text) if addon.present?
     text << help_inline(help_inline) if help_inline.present?
     text << help_block(help) if help.present?

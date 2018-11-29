@@ -124,6 +124,10 @@ de:
               invalid_check_digit: 'ist nicht gültig; Inkorrekte Prüfziffer'
             payee:
               to_long: 'darf höchstens 2 Zeilen enthalten'
+        mailing_list:
+            attributes:
+                additional_sender:
+                    invalid: "muss Mailadressen vom Format abcd@ee.ch oder *@ee.ch enthalten. Mehrere Adressen müssen mit ',' oder ';' abgetrennt werden."
 
     models:
       acts_as_taggable_on/tag:
@@ -231,6 +235,9 @@ de:
       role:
         one: Rolle
         other: Rollen
+      service_token:
+        one: API-Key
+        other: API-Keys
       social_account:
         one: Social Media Adresse
         other: Social Media Adressen
@@ -574,10 +581,13 @@ de:
         subscribable: Abonnenten dürfen sich selbst an/abmelden
         mail_name: Mailinglisten Adresse
         mail_address: Mailingliste
+        mail_address_link: Mailingliste
         subscribers_may_post: Abonnenten dürfen auf die Mailingliste schreiben
         additional_sender: Zusätzlicher Absender
         preferred_labels: Bevorzugte E-Mail-Labels
         main_email: Versand an Haupt E-Mail
+        mailchimp_api_key: 'MailChimp API-Schlüssel'
+        mailchimp_list_id: 'MailChimp Listen-ID'
 
       subscription:
         related_role_types: Rollen
@@ -609,7 +619,7 @@ de:
 
       invoice:
         title: Titel
-        description: Beschreibung
+        description: Text
         invoice_items: Rechnungsposten
         invoice_item_article: Rechnungsartikel
         invoice_config: Rechnungseinstellung
@@ -625,7 +635,7 @@ de:
         states:
           draft: Entwurf
           issued: Gestellt
-          sent: Versendet
+          sent: per Mail versendet
           payed: Bezahlt
           reminded: Gemahnt
           cancelled: Storniert
@@ -640,6 +650,7 @@ de:
         total_inkl_vat: Total inkl. MwSt.
         total: Total inkl. MwSt.
         vat: MwSt.
+        vat_number: MwSt. Nummer
         payment_information: Zahlungsinformation
         payment_purpose: Zahlungszweck
         address: Absender Adresse
@@ -670,6 +681,7 @@ de:
         contact: Kontaktperson
         contact_id: Kontaktperson
         beneficiary: Zugunsten von
+        email: Absender E-Mail
         payee: Einzahlung für
         payment_slip: Einzahlungsschein
         payment_slips:
@@ -678,7 +690,9 @@ de:
           ch_esr: Oranger Einzahlungsschein Post (CH)
           ch_besr: Oranger Einzahlungsschein Bank (CH)
         participant_number: Teilnehmernummer
+        participant_number_internal: Teilnehmernummer intern
         payment_reminder_configs: Mahnungen
+        vat_number: MwSt. Nummer
 
       invoice_item:
         name: Name
@@ -717,6 +731,18 @@ de:
         title: Titel der Mahnung
         text: Text der Mahnung
         due_days: Fälligkeitszeitraum der Mahnung
+      
+      service_token:
+        name: Name
+        description: Beschreibung
+        key: Key
+        abilities: Rechte
+        last_access: Letzter Zugriff
+        people: Personen dieser Gruppe
+        people_below: Personen von Untergruppen
+        groups: Gruppen dieser Gruppe
+        events: Events dieser Gruppe
+
 
   errors:
     messages:

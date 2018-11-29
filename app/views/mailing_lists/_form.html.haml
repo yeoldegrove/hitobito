@@ -12,7 +12,7 @@
         = f.input_field(:mail_name, class: 'span3')
         %span.add-on= "@#{entry.mail_domain}"
 
-    = f.labeled_input_field(:additional_sender, help: t('.help_additional_sender'))
+    = f.labeled_input_field(:additional_sender, help: t('.help_additional_sender'), placeholder: "hans.muster@pfadi-beispiel.ch; *@pfadi-muster.ch")
 
   %fieldset
     = f.labeled(:preferred_labels) do
@@ -37,6 +37,10 @@
         = f.boolean_field(:main_email, caption: t('.caption_main_email_with_preferred_labels').html_safe)
       - else
         = f.boolean_field(:main_email, caption: t('.caption_main_email').html_safe)
+
+  %fieldset
+    = f.labeled_input_fields(:mailchimp_list_id, help: t('.help_mailchimp_sync'))
+    = f.labeled_input_fields(:mailchimp_api_key)
 
   %fieldset
     = f.indented do

@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-#  Copyright (c) 2017, Jungwacht Blauring Schweiz. This file is part of
+#  Copyright (c) 2017-2018, Jungwacht Blauring Schweiz. This file is part of
 #  hitobito and licensed under the Affero General Public License version 3
 #  or later. See the COPYING file at the top-level directory or at
 #  https://github.com/hitobito/hitobito.
@@ -8,32 +8,33 @@
 #
 # Table name: invoices
 #
-#  id                  :integer          not null, primary key
-#  title               :string(255)      not null
-#  sequence_number     :string(255)      not null
-#  state               :string(255)      default("draft"), not null
-#  esr_number          :string(255)      not null
-#  description         :text(65535)
-#  recipient_email     :string(255)
-#  recipient_address   :text(65535)
-#  sent_at             :date
-#  due_at              :date
-#  group_id            :integer          not null
-#  recipient_id        :integer
-#  total               :decimal(12, 2)
-#  created_at          :datetime         not null
-#  updated_at          :datetime         not null
-#  account_number      :string(255)
-#  address             :text(65535)
-#  issued_at           :date
-#  iban                :string(255)
-#  payment_purpose     :text(65535)
-#  payment_information :text(65535)
-#  payment_slip        :string(255)      default("ch_es"), not null
-#  beneficiary         :text(65535)
-#  payee               :text(65535)
-#  participant_number  :string(255)
-#  creator_id          :integer
+#  id                          :integer          not null, primary key
+#  title                       :string(255)      not null
+#  sequence_number             :string(255)      not null
+#  state                       :string(255)      default("draft"), not null
+#  esr_number                  :string(255)      not null
+#  description                 :text(65535)
+#  recipient_email             :string(255)
+#  recipient_address           :text(65535)
+#  sent_at                     :date
+#  due_at                      :date
+#  group_id                    :integer          not null
+#  recipient_id                :integer
+#  total                       :decimal(12, 2)
+#  created_at                  :datetime         not null
+#  updated_at                  :datetime         not null
+#  account_number              :string(255)
+#  address                     :text(65535)
+#  issued_at                   :date
+#  iban                        :string(255)
+#  payment_purpose             :text(65535)
+#  payment_information         :text(65535)
+#  payment_slip                :string(255)      default("ch_es"), not null
+#  beneficiary                 :text(65535)
+#  payee                       :text(65535)
+#  participant_number          :string(255)
+#  creator_id                  :integer
+#  participant_number_internal :string(255)
 #
 
 class Invoice < ActiveRecord::Base
@@ -82,18 +83,31 @@ class Invoice < ActiveRecord::Base
 
   validates_by_schema
 
-  scope :list,           -> { order('LENGTH(sequence_number), sequence_number') }
+  scope :list,           -> { order_by_sequence_number }
   scope :one_day,        -> { where('invoices.due_at < ?', 1.day.ago.to_date) }
   scope :one_week,       -> { where('invoices.due_at < ?', 1.week.ago.to_date) }
   scope :one_month,      -> { where('invoices.due_at < ?', 1.month.ago.to_date) }
   scope :visible,        -> { where.not(state: :cancelled) }
   scope :remindable,     -> { where(state: STATES_REMINDABLE) }
 
-  def self.to_contactables(invoices)
-    invoices.collect do |invoice|
-      next if invoice.recipient_address.blank?
-      Person.new(address: invoice.recipient_address)
-    end.compact
+  class << self
+    def to_contactables(invoices)
+      invoices.collect do |invoice|
+        next if invoice.recipient_address.blank?
+        Person.new(address: invoice.recipient_address)
+      end.compact
+    end
+
+    def order_by_sequence_number
+      order(order_by_sequence_number_statement)
+    end
+
+    # Orders by first integer, second integer
+    def order_by_sequence_number_statement
+      %w(sequence_number).product(%w(1 -1)).map do |field, index|
+        "CAST(SUBSTRING_INDEX(#{field}, '-', #{index}) AS UNSIGNED)"
+      end
+    end
   end
 
   def multi_create
@@ -185,8 +199,9 @@ class Invoice < ActiveRecord::Base
   end
 
   def set_payment_attributes
-    [:address, :account_number, :iban,
-     :payment_slip, :beneficiary, :payee, :participant_number].each do |at|
+    [:address, :account_number, :iban, :payment_slip,
+     :beneficiary, :payee, :participant_number,
+     :participant_number_internal, :vat_number].each do |at|
       assign_attributes(at => invoice_config.send(at))
     end
   end
@@ -230,6 +245,6 @@ class Invoice < ActiveRecord::Base
   end
 
   def round(decimal)
-    ((decimal / ROUND_TO).round) * ROUND_TO
+    (decimal / ROUND_TO).round * ROUND_TO
   end
 end

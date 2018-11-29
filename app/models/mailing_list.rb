@@ -8,19 +8,23 @@
 #
 # Table name: mailing_lists
 #
-#  id                   :integer          not null, primary key
-#  name                 :string(255)      not null
-#  group_id             :integer          not null
-#  description          :text(65535)
-#  publisher            :string(255)
-#  mail_name            :string(255)
-#  additional_sender    :string(255)
-#  subscribable         :boolean          default(FALSE), not null
-#  subscribers_may_post :boolean          default(FALSE), not null
-#  anyone_may_post      :boolean          default(FALSE), not null
-#  delivery_report      :boolean          default(FALSE), not null
-#  preferred_labels     :string(255)
-#  main_email           :boolean          default(FALSE)
+#  id                       :integer          not null, primary key
+#  name                     :string(255)      not null
+#  group_id                 :integer          not null
+#  description              :text(65535)
+#  publisher                :string(255)
+#  mail_name                :string(255)
+#  additional_sender        :string(255)
+#  subscribable             :boolean          default(FALSE), not null
+#  subscribers_may_post     :boolean          default(FALSE), not null
+#  anyone_may_post          :boolean          default(FALSE), not null
+#  preferred_labels         :string(255)
+#  delivery_report          :boolean          default(FALSE), not null
+#  main_email               :boolean          default(FALSE)
+#  mailchimp_api_key        :string(255)
+#  mailchimp_list_id        :string(255)
+#  mailchimp_syncing        :boolean          default(FALSE)
+#  mailchimp_last_synced_at :datetime
 #
 
 class MailingList < ActiveRecord::Base
@@ -45,6 +49,11 @@ class MailingList < ActiveRecord::Base
                         allow_blank: true
   validates :description, length: { allow_nil: true, maximum: 2**16 - 1 }
   validate :assert_mail_name_is_not_protected
+  validates :additional_sender,
+      allow_blank: true,
+      format: /\A *(([a-z][a-z0-9\-\_\.]*|\*)@([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,} *(,|;|\Z) *)+\Z/
+
+  after_destroy :schedule_mailchimp_destroy, if: :mailchimp?
 
   DEFAULT_LABEL = '_main'.freeze
 
@@ -53,7 +62,11 @@ class MailingList < ActiveRecord::Base
   end
 
   def labels
-    main_email ? preferred_labels + [DEFAULT_LABEL]: preferred_labels
+    main_email ? preferred_labels + [DEFAULT_LABEL] : preferred_labels
+  end
+
+  def mailchimp?
+    [mailchimp_api_key, mailchimp_list_id].all?(&:present?)
   end
 
   def preferred_labels=(labels)
@@ -176,4 +189,11 @@ class MailingList < ActiveRecord::Base
     config = Settings.email.retriever.config
     config.presence && config.user_name.presence
   end
+
+  private
+
+  def schedule_mailchimp_destroy
+    MailchimpDestructionJob.new(mailchimp_list_id, mailchimp_api_key, people).enqueue!
+  end
+
 end

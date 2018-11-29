@@ -42,10 +42,9 @@ gem 'paranoia', '< 2.1.2' # uses 2.0 for testing (no explicit requirement, yet)
 gem 'prawn', '< 2.0' # 2.0 requires ruby 2.0
 gem 'prawn-table'
 gem 'protective'
-gem 'rack'
 gem 'rails-i18n'
 gem 'rails_autolink'
-gem 'rubyzip'
+gem 'rubyzip', '~> 1.2.2'
 gem 'seed-fu'
 gem 'simpleidn'
 gem 'sqlite3' # for development, test and production when generating assets
@@ -54,6 +53,7 @@ gem 'validates_by_schema'
 gem 'validates_timeliness', '< 4.0'
 gem 'vcard'
 gem 'wagons'
+gem 'gibbon', '~> 3.2'
 
 # load after others because of active record inherited alias chain.
 gem 'kaminari', '< 1.0.0' # requires ruby 2.0
@@ -65,6 +65,7 @@ gem 'chosen-rails'
 gem 'coffee-rails'
 gem 'compass'
 gem 'compass-rails'
+gem 'font-awesome-rails', '~> 4.7', '>= 4.7.0.1'
 gem 'jquery-cookie-rails'
 gem 'jquery-rails'
 gem 'jquery-turbolinks'
@@ -75,8 +76,11 @@ gem 'therubyracer', platforms: :ruby
 gem 'turbolinks'
 gem 'uglifier'
 
-# security updates, can be deleted if they get in the way of updates or so
+# security updates, can be deleted or changed if they get in the way of updates or so
+gem 'loofah', '~> 2.2.3'
+gem 'rack', '~> 1.6.11'
 gem 'sprockets', '~> 3.7.2'
+
 
 group :development, :test do
   gem 'binding_of_caller'
@@ -108,6 +112,7 @@ group :test do
   gem 'rspec-collection_matchers'
   gem 'rspec-its'
   gem 'selenium-webdriver'
+  gem 'webmock', '~> 3.4', '>= 3.4.2'
 end
 
 group :console do

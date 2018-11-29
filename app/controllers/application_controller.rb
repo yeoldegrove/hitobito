@@ -24,7 +24,7 @@ class ApplicationController < ActionController::Base
   before_action :set_no_cache
   before_action :set_paper_trail_whodunnit
 
-  alias_method :decorate, :__decorator_for__
+  alias decorate __decorator_for__
 
   if Rails.env.production?
     rescue_from CanCan::AccessDenied do |_exception|
@@ -43,7 +43,7 @@ class ApplicationController < ActionController::Base
   private
 
   def not_found
-    fail ActionController::RoutingError, 'Not Found'
+    raise ActionController::RoutingError, 'Not Found'
   end
 
   def set_no_cache
@@ -60,4 +60,13 @@ class ApplicationController < ActionController::Base
     origin_user_id = session[:origin_user]
     origin_user_id ? origin_user_id : super
   end
+
+  def current_ability
+    @current_ability ||= if current_user
+                           Ability.new(current_user)
+                         else
+                           TokenAbility.new(current_service_token)
+                         end
+  end
+
 end

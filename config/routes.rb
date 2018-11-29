@@ -77,6 +77,12 @@ Hitobito::Application.routes.draw do
 
       end
 
+      resource :role_list, only: [:destroy, :create, :new] do
+        get 'deletable' => 'role_lists#deletable'
+        get 'move'      => 'role_lists#move'
+        get 'movable'   => 'role_lists#movable'
+        put 'move'      => 'role_lists#update'
+      end
       resources :roles, except: [:index, :show] do
         collection do
           get :details
@@ -100,10 +106,14 @@ Hitobito::Application.routes.draw do
             'group/person_add_request_ignored_approvers#update',
           as: 'person_add_request_ignored_approvers'
 
+      get 'public_events/:id' => 'public_events#show', as: :public_event
+      get 'events/participation_lists/new' => 'event/participation_lists#new'
+
       resources :events do
         collection do
           get 'simple' => 'events#index'
           get 'course' => 'events#index', type: 'Event::Course'
+          get 'typeahead' => 'events#typeahead'
         end
 
         scope module: 'event' do
@@ -132,6 +142,7 @@ Hitobito::Application.routes.draw do
 
           resources :attachments, only: [:create, :destroy]
 
+          resource :participation_lists, only: :create
           resources :participations do
             collection do
               get 'contact_data', controller: 'participation_contact_datas', action: 'edit'
@@ -179,6 +190,8 @@ Hitobito::Application.routes.draw do
             resource :user, only: [:create, :destroy], controller: 'subscriber/user'
           end
         end
+
+        resources :mailchimp_synchronizations, only: [:create]
       end
 
       resource :csv_imports, only: [:new, :create], controller: 'person/csv_imports' do
@@ -189,6 +202,8 @@ Hitobito::Application.routes.draw do
           get 'preview'        => 'person/csv_imports#new' # route required for language switch
         end
       end
+
+      resources :service_tokens
 
     end # resources :group
 
@@ -211,6 +226,7 @@ Hitobito::Application.routes.draw do
     resources :custom_contents, only: [:index, :edit, :update]
     get 'custom_contents/:id' => 'custom_contents#edit'
 
+    devise_for :service_tokens, only: [:sessions]
     devise_for :people, skip: [:registrations], path: "users"
     as :person do
       get 'users/edit' => 'devise/registrations#edit', :as => 'edit_person_registration'
@@ -228,6 +244,8 @@ Hitobito::Application.routes.draw do
 
     get 'downloads/:id' => 'async_downloads#show'
     get 'downloads/:id/exists' => 'async_downloads#exists?'
+
+    get 'synchronizations/:id' => 'async_synchronizations#show'
 
   end # scope locale
 

@@ -18,8 +18,8 @@ module PeopleHelper
                                                            households: households).to_s
   end
 
-  def invoice_button(people, *groups)
-    finance_groups = groups.collect(&:layer_group) & current_user.finance_groups
+  def invoice_button(people)
+    finance_groups = current_user.finance_groups
     if finance_groups.size == 1
       invoice_button_single(people, finance_groups.first)
     elsif finance_groups.size > 1
@@ -32,7 +32,7 @@ module PeopleHelper
   def invoice_button_single(people, finance_group)
     action_button(t('crud.new.title', model: Invoice.model_name.human),
                   new_invoices_for_people_path(finance_group, people),
-                  :plus)
+                  :plus, data: { checkable: true })
   end
 
   def format_birthday(person)
@@ -90,6 +90,27 @@ module PeopleHelper
       user != current_user &&
       !origin_user &&
       group.people.exists?(id: user.id)
+  end
+
+  def link_to_address(person)
+    if [person.address, person.zip_code, person.town].all?(&:present?)
+      link_to(icon('map-marker', class: 'fa-2x'), person_address_url(person), target: '_blank')
+    end
+  end
+
+  def person_address_url(person)
+    query_params = { street: person.address,
+                     postalcode: person.zip_code,
+                     city: person.town,
+                     country_codes: person.country }.to_query
+
+    openstreetmap_url(query_params)
+  end
+
+  def openstreetmap_url(query_params)
+    URI::HTTP.build(host: 'nominatim.openstreetmap.org',
+                    path: '/search.php',
+                    query: query_params).to_s
   end
 
 end

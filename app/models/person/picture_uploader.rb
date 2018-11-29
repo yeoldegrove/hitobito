@@ -15,6 +15,7 @@ class Person::PictureUploader < Uploader::Base
 
   # Process files as they are uploaded:
   process :validate_dimensions
+  process :fix_exif_rotation
   process resize_to_fill: [72, 72]
 
   # Create different versions of your uploaded files:
@@ -38,9 +39,16 @@ class Person::PictureUploader < Uploader::Base
   def validate_dimensions
     manipulate! do |img|
       if img.dimensions.any? { |i| i > MAX_DIMENSION }
-        fail CarrierWave::ProcessingError,
-             I18n.t('errors.messages.dimensions_too_large', maximum: MAX_DIMENSION)
+        raise CarrierWave::ProcessingError,
+              I18n.t('errors.messages.dimensions_too_large', maximum: MAX_DIMENSION)
       end
+      img
+    end
+  end
+
+  def fix_exif_rotation
+    manipulate! do |img|
+      img.auto_orient
       img
     end
   end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180702093715) do
+ActiveRecord::Schema.define(version: 20181119094017) do
 
   create_table "additional_emails", force: :cascade do |t|
     t.integer "contactable_id",   limit: 4,                   null: false
@@ -147,8 +147,8 @@ ActiveRecord::Schema.define(version: 20180702093715) do
     t.integer "event_id",         limit: 4
     t.string  "question",         limit: 255
     t.string  "choices",          limit: 255
-    t.boolean "multiple_choices",             default: false
-    t.boolean "required"
+    t.boolean "multiple_choices",             default: false, null: false
+    t.boolean "required",                     default: false, null: false
     t.boolean "admin",                        default: false, null: false
   end
 
@@ -248,20 +248,23 @@ ActiveRecord::Schema.define(version: 20180702093715) do
     t.integer  "group_id",    limit: 4,                              null: false
   end
 
-  add_index "invoice_articles", ["number"], name: "index_invoice_articles_on_number", unique: true, using: :btree
+  add_index "invoice_articles", ["number", "group_id"], name: "index_invoice_articles_on_number_and_group_id", unique: true, using: :btree
 
   create_table "invoice_configs", force: :cascade do |t|
-    t.integer "sequence_number",     limit: 4,     default: 1,       null: false
-    t.integer "due_days",            limit: 4,     default: 30,      null: false
-    t.integer "group_id",            limit: 4,                       null: false
-    t.text    "address",             limit: 65535
-    t.text    "payment_information", limit: 65535
-    t.string  "account_number",      limit: 255
-    t.string  "iban",                limit: 255
-    t.string  "payment_slip",        limit: 255,   default: "ch_es", null: false
-    t.text    "beneficiary",         limit: 65535
-    t.text    "payee",               limit: 65535
-    t.string  "participant_number",  limit: 255
+    t.integer "sequence_number",             limit: 4,     default: 1,       null: false
+    t.integer "due_days",                    limit: 4,     default: 30,      null: false
+    t.integer "group_id",                    limit: 4,                       null: false
+    t.text    "address",                     limit: 65535
+    t.text    "payment_information",         limit: 65535
+    t.string  "account_number",              limit: 255
+    t.string  "iban",                        limit: 255
+    t.string  "payment_slip",                limit: 255,   default: "ch_es", null: false
+    t.text    "beneficiary",                 limit: 65535
+    t.text    "payee",                       limit: 65535
+    t.string  "participant_number",          limit: 255
+    t.string  "email",                       limit: 255
+    t.string  "participant_number_internal", limit: 255
+    t.string  "vat_number",                  limit: 255
   end
 
   add_index "invoice_configs", ["group_id"], name: "index_invoice_configs_on_group_id", using: :btree
@@ -278,31 +281,33 @@ ActiveRecord::Schema.define(version: 20180702093715) do
   add_index "invoice_items", ["invoice_id"], name: "index_invoice_items_on_invoice_id", using: :btree
 
   create_table "invoices", force: :cascade do |t|
-    t.string   "title",               limit: 255,                                              null: false
-    t.string   "sequence_number",     limit: 255,                                              null: false
-    t.string   "state",               limit: 255,                            default: "draft", null: false
-    t.string   "esr_number",          limit: 255,                                              null: false
-    t.text     "description",         limit: 65535
-    t.string   "recipient_email",     limit: 255
-    t.text     "recipient_address",   limit: 65535
+    t.string   "title",                       limit: 255,                                              null: false
+    t.string   "sequence_number",             limit: 255,                                              null: false
+    t.string   "state",                       limit: 255,                            default: "draft", null: false
+    t.string   "esr_number",                  limit: 255,                                              null: false
+    t.text     "description",                 limit: 65535
+    t.string   "recipient_email",             limit: 255
+    t.text     "recipient_address",           limit: 65535
     t.date     "sent_at"
     t.date     "due_at"
-    t.integer  "group_id",            limit: 4,                                                null: false
-    t.integer  "recipient_id",        limit: 4
-    t.decimal  "total",                             precision: 12, scale: 2
-    t.datetime "created_at",                                                                   null: false
-    t.datetime "updated_at",                                                                   null: false
-    t.string   "account_number",      limit: 255
-    t.text     "address",             limit: 65535
+    t.integer  "group_id",                    limit: 4,                                                null: false
+    t.integer  "recipient_id",                limit: 4
+    t.decimal  "total",                                     precision: 12, scale: 2
+    t.datetime "created_at",                                                                           null: false
+    t.datetime "updated_at",                                                                           null: false
+    t.string   "account_number",              limit: 255
+    t.text     "address",                     limit: 65535
     t.date     "issued_at"
-    t.string   "iban",                limit: 255
-    t.text     "payment_purpose",     limit: 65535
-    t.text     "payment_information", limit: 65535
-    t.string   "payment_slip",        limit: 255,                            default: "ch_es", null: false
-    t.text     "beneficiary",         limit: 65535
-    t.text     "payee",               limit: 65535
-    t.string   "participant_number",  limit: 255
-    t.integer  "creator_id",          limit: 4
+    t.string   "iban",                        limit: 255
+    t.text     "payment_purpose",             limit: 65535
+    t.text     "payment_information",         limit: 65535
+    t.string   "payment_slip",                limit: 255,                            default: "ch_es", null: false
+    t.text     "beneficiary",                 limit: 65535
+    t.text     "payee",                       limit: 65535
+    t.string   "participant_number",          limit: 255
+    t.integer  "creator_id",                  limit: 4
+    t.string   "participant_number_internal", limit: 255
+    t.string   "vat_number",                  limit: 255
   end
 
   add_index "invoices", ["esr_number"], name: "index_invoices_on_esr_number", using: :btree
@@ -359,18 +364,22 @@ ActiveRecord::Schema.define(version: 20180702093715) do
   add_index "mail_logs", ["mailing_list_id"], name: "index_mail_logs_on_mailing_list_id", using: :btree
 
   create_table "mailing_lists", force: :cascade do |t|
-    t.string  "name",                 limit: 255,                   null: false
-    t.integer "group_id",             limit: 4,                     null: false
-    t.text    "description",          limit: 65535
-    t.string  "publisher",            limit: 255
-    t.string  "mail_name",            limit: 255
-    t.string  "additional_sender",    limit: 255
-    t.boolean "subscribable",                       default: false, null: false
-    t.boolean "subscribers_may_post",               default: false, null: false
-    t.boolean "anyone_may_post",                    default: false, null: false
-    t.string  "preferred_labels",     limit: 255
-    t.boolean "main_email",                         default: false
-    t.boolean "delivery_report",                    default: false, null: false
+    t.string   "name",                     limit: 255,                   null: false
+    t.integer  "group_id",                 limit: 4,                     null: false
+    t.text     "description",              limit: 65535
+    t.string   "publisher",                limit: 255
+    t.string   "mail_name",                limit: 255
+    t.string   "additional_sender",        limit: 255
+    t.boolean  "subscribable",                           default: false, null: false
+    t.boolean  "subscribers_may_post",                   default: false, null: false
+    t.boolean  "anyone_may_post",                        default: false, null: false
+    t.string   "preferred_labels",         limit: 255
+    t.boolean  "delivery_report",                        default: false, null: false
+    t.boolean  "main_email",                             default: false
+    t.string   "mailchimp_api_key",        limit: 255
+    t.string   "mailchimp_list_id",        limit: 255
+    t.boolean  "mailchimp_syncing",                      default: false
+    t.datetime "mailchimp_last_synced_at"
   end
 
   add_index "mailing_lists", ["group_id"], name: "index_mailing_lists_on_group_id", using: :btree
@@ -562,6 +571,20 @@ ActiveRecord::Schema.define(version: 20180702093715) do
 
   add_index "roles", ["person_id", "group_id"], name: "index_roles_on_person_id_and_group_id", using: :btree
   add_index "roles", ["type"], name: "index_roles_on_type", using: :btree
+
+  create_table "service_tokens", force: :cascade do |t|
+    t.integer  "layer_group_id", limit: 4,                     null: false
+    t.string   "name",           limit: 255,                   null: false
+    t.text     "description",    limit: 65535
+    t.string   "token",          limit: 255,                   null: false
+    t.datetime "last_access"
+    t.boolean  "people",                       default: false
+    t.boolean  "people_below",                 default: false
+    t.boolean  "groups",                       default: false
+    t.boolean  "events",                       default: false
+    t.datetime "created_at",                                   null: false
+    t.datetime "updated_at",                                   null: false
+  end
 
   create_table "sessions", force: :cascade do |t|
     t.string   "session_id", limit: 255,   null: false

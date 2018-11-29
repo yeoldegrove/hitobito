@@ -1,5 +1,15 @@
 # Hitobito Changelog
 
+## Version 1.19
+
+*   Neue Navigation, mit Menü für Mobile
+*   Mehrfachaktionen auf Personen
+*   API Schnittstelle für Events
+*   Service Accounts für API
+*   Rechnungen erstellen mit `:finance` Berechtigung
+*   Integration mit Mailchimp API
+*   Seite für Events mit externer Anmeldung ohne Login
+
 ## Version 1.18
 
 *   Alle Personenfilter sind zusammengefasst und lassen sich abspeichern.

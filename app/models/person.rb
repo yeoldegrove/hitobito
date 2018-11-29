@@ -63,6 +63,10 @@ class Person < ActiveRecord::Base
     :show_global_label_formats, :household_key
   ]
 
+  FILTER_ATTRS = [ # rubocop:disable Style/MutableConstant meant to be extended in wagons
+    :first_name, :last_name, :nickname, :company_name, :email, :address, :zip_code, :town, :country
+  ]
+
   GENDERS = %w(m w).freeze
 
   ADDRESS_ATTRS = %w(address zip_code town country).freeze
@@ -111,6 +115,11 @@ class Person < ActiveRecord::Base
                          through: :event_participations,
                          source: :roles
   has_many :events, through: :event_participations
+
+  has_many :event_responsibilities, class_name: 'Event',
+                                    foreign_key: :contact_id,
+                                    inverse_of: :contact,
+                                    dependent: :nullify
 
   has_many :qualifications, dependent: :destroy
 
@@ -187,6 +196,12 @@ class Person < ActiveRecord::Base
 
     def mailing_emails_for(people, labels = [])
       MailRelay::AddressList.new(people, labels).entries
+    end
+
+    def filter_attrs_list
+      Person::FILTER_ATTRS.collect do |attr|
+        [Person.human_attribute_name(attr), attr]
+      end.sort
     end
 
     private

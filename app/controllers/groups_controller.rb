@@ -7,6 +7,8 @@
 
 class GroupsController < CrudController
 
+  include Concerns::AsyncDownload
+
   # Respective group attrs are added in corresponding instance method.
   self.permitted_attrs = Contactable::ACCESSIBLE_ATTRS.dup
 
@@ -52,17 +54,14 @@ class GroupsController < CrudController
   end
 
   def export_subgroups
-    list = entry.self_and_descendants.
-                 without_deleted.
-                 order(:lft).
-                 includes(:contact)
-    csv = Export::Tabular::Groups::List.csv(list)
-    send_data csv, type: :csv
+    with_async_download_cookie(:csv, :subgroups_export) do |filename|
+      Export::SubgroupsExportJob.new(current_person.id, entry, filename: filename).enqueue!
+    end
+
+    redirect_to entry
   end
 
-  def person_notes
-
-  end
+  def person_notes; end
 
   private
 
@@ -109,7 +108,6 @@ class GroupsController < CrudController
     children = @sub_groups.delete(sub_groups_label)
     @sub_groups[sub_groups_label] = children if children
   end
-
 
   def sub_groups_label
     @sub_groups_label ||= translate(:subgroups)

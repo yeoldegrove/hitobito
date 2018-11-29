@@ -1,3 +1,8 @@
+PATH
+  remote: ../hitobito_generic
+  specs:
+    hitobito_generic (0.0.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -148,6 +153,8 @@ GEM
     country_select (2.5.1)
       countries (~> 1.2.0)
       sort_alphabetical (~> 1.0)
+    crack (0.4.3)
+      safe_yaml (~> 1.0.0)
     crass (1.0.4)
     currencies (0.4.2)
     customized_piwik_analytics (1.0.4)
@@ -190,7 +197,14 @@ GEM
     fabrication (2.16.1)
     faker (1.6.3)
       i18n (~> 0.5)
+    faraday (0.15.3)
+      multipart-post (>= 1.2, < 3)
     ffi (1.9.25)
+    font-awesome-rails (4.7.0.4)
+      railties (>= 3.2, < 6.0)
+    gibbon (3.2.0)
+      faraday (>= 0.9.1)
+      multi_json (>= 1.11.0)
     globalid (0.3.7)
       activesupport (>= 4.1.0)
     globalize (5.0.1)
@@ -198,6 +212,7 @@ GEM
       activerecord (>= 4.2.0, < 4.3)
     haml (4.0.7)
       tilt
+    hashdiff (0.3.7)
     hashery (2.1.2)
     headless (2.3.1)
     hirb (0.7.3)
@@ -229,7 +244,7 @@ GEM
     launchy (2.4.3)
       addressable (~> 2.3)
     libv8 (3.16.14.17)
-    loofah (2.2.2)
+    loofah (2.2.3)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     magiclabs-userstamp (3.0)
@@ -254,9 +269,10 @@ GEM
     mini_portile2 (2.3.0)
     minitest (5.10.3)
     multi_json (1.13.1)
+    multipart-post (2.0.0)
     mysql2 (0.4.9)
     nested_form (0.3.2)
-    nokogiri (1.8.4)
+    nokogiri (1.8.5)
       mini_portile2 (~> 2.3.0)
     nuggets (1.5.0)
     oat (0.5.0)
@@ -310,7 +326,7 @@ GEM
     public_suffix (3.0.3)
     quiet_assets (1.1.0)
       railties (>= 3.1, < 5.0)
-    rack (1.6.10)
+    rack (1.6.11)
     rack-protection (1.5.5)
       rack
     rack-test (0.6.3)
@@ -406,7 +422,7 @@ GEM
     ruby-prof (0.16.2)
     ruby-progressbar (1.9.0)
     ruby-rc4 (0.1.5)
-    rubyzip (1.2.1)
+    rubyzip (1.2.2)
     safe_yaml (1.0.4)
     sass (3.4.23)
     sass-rails (5.0.6)
@@ -493,6 +509,10 @@ GEM
       seed-fu-ndo (>= 0.0.2)
     warden (1.2.7)
       rack (>= 1.0)
+    webmock (3.4.2)
+      addressable (>= 2.3.6)
+      crack (>= 0.3.2)
+      hashdiff
     wirble (0.1.3)
     xpath (3.1.0)
       nokogiri (~> 1.8)
@@ -537,10 +557,13 @@ DEPENDENCIES
   draper
   fabrication
   faker (< 1.6.4)
+  font-awesome-rails (~> 4.7, >= 4.7.0.1)
+  gibbon (~> 3.2)
   globalize
   haml
   headless
   hirb
+  hitobito_generic!
   http_accept_language
   icalendar
   jquery-cookie-rails
@@ -549,6 +572,7 @@ DEPENDENCIES
   jquery-ui-rails
   kaminari (< 1.0.0)
   launchy
+  loofah (~> 2.2.3)
   magiclabs-userstamp
   mailcatcher
   mime-types (~> 2.6.2)
@@ -569,7 +593,7 @@ DEPENDENCIES
   pry-remote
   pry-stack_explorer
   quiet_assets
-  rack
+  rack (~> 1.6.11)
   rails (= 4.2.8)
   rails-erd
   rails-i18n
@@ -584,7 +608,7 @@ DEPENDENCIES
   rubocop
   rubocop-checkstyle_formatter
   ruby-prof
-  rubyzip
+  rubyzip (~> 1.2.2)
   sass-rails
   seed-fu
   selenium-webdriver
@@ -601,6 +625,7 @@ DEPENDENCIES
   validates_timeliness (< 4.0)
   vcard
   wagons
+  webmock (~> 3.4, >= 3.4.2)
   wirble
 
 BUNDLED WITH
