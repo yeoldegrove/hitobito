@@ -25,7 +25,7 @@ module Dropdown::Event
     end
 
     def tabular_links(format)
-      add_item(translate(format), params.permit!.merge(format: format))
+      add_item(translate(format), params.merge(format: format))
     end
 
   end
